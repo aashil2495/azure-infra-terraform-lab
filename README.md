@@ -109,7 +109,7 @@ Follow these steps to replicate the demo:
 
 1. **Access Azure DevOps**:
    - Navigate to [Azure DevOps](https://dev.azure.com/itm9).
-   - Create a new project (e.g., `cicd-demo01`) or select an existing one.
+   - Create a new project or select an existing one.
 
 2. **Set Up Repository**:
    - Go to **Repos** in your Azure DevOps project.
@@ -125,7 +125,7 @@ Follow these steps to replicate the demo:
    - Navigate to the folder where you want to create the local Azure DevOps repository.
    - Clone your Azure DevOps repository (replace `{your repo name}` with your repository name):
      ```bash
-     git clone https://itm9@dev.azure.com/itm9/cicd-demo01/_git/{your repo name}
+     git clone https://{your organization name}@dev.azure.com/{your organization name}/{your project name}/_git/{your repo name}
      ```
 
 4. **Copy Files**:
