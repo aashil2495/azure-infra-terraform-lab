@@ -104,57 +104,107 @@ Before you begin, ensure you have the following:
 
 ---
 
-## Getting Started
+## Setup Instructions
+Follow these steps to replicate the demo:
 
-### Scenario 1: Initialize and Push Local Repo to Azure DevOps
+1. **Access Azure DevOps**:
+   - Navigate to [Azure DevOps](https://dev.azure.com/itm9).
+   - Create a new project (e.g., `cicd-demo01`) or select an existing one.
 
-1. **Initialize a local git repository (if not already initialized):**
-   ```sh
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
-2. **Add Azure DevOps remote:**
-   ```sh
-   git remote add origin https://dev.azure.com/{organization}/{project}/_git/{repo}
-   ```
-3. **Push your code to Azure DevOps:**
-   ```sh
-   git push -u origin main
-   ```
-4. **Go to Azure DevOps portal and manually run the bootstrap pipeline:**
-   - Navigate to Pipelines > Bootstrap Pipeline
-   - Click **Run pipeline** to provision state storage
+2. **Set Up Repository**:
+   - Go to **Repos** in your Azure DevOps project.
+   - If a repository exists, use it. Otherwise, create a new one by clicking the **+** symbol next to the project name and providing a name, then click **Create**.
 
-5. **Make changes in the `terraform/resources/` directory to trigger the main resources pipeline:**
-   ```sh
-   # Edit or add files in terraform/resources/
-   git add terraform/resources/
-   git commit -m "Add main infrastructure resources"
-   git push
-   ```
-   - The main resources pipeline in Azure DevOps will run automatically on changes pushed to this directory.
+3. **Clone Repositories Locally**:
+   - On your local machine, navigate to the desired folder for the GitHub repository.
+   - Clone the GitHub repository:
+     ```bash
+     git clone https://github.com/jatinitm/a_iac_terraform_dbrx.git
+     ```
+   - Sign in when prompted to complete the cloning process.
+   - Navigate to the folder where you want to create the local Azure DevOps repository.
+   - Clone your Azure DevOps repository (replace `{your repo name}` with your repository name):
+     ```bash
+     git clone https://itm9@dev.azure.com/itm9/cicd-demo01/_git/{your repo name}
+     ```
 
----
+4. **Copy Files**:
+   - Copy all files from the cloned GitHub repository folder to the local Azure DevOps repository folder.
 
-### Scenario 2: Clone Existing Azure DevOps Repo and Work With Pipelines
+5. **Work in VS Code**:
+   - Open the Azure DevOps repository folder in Visual Studio Code:
+     ```bash
+     code .
+     ```
 
-1. **Clone the repository from Azure DevOps:**
-   ```sh
-   git clone https://dev.azure.com/{organization}/{project}/_git/{repo}
-   cd {repo}
-   ```
-2. **If the bootstrap pipeline has not run before, manually trigger it:**
-   - Go to Azure DevOps portal
-   - Navigate to Pipelines > Bootstrap Pipeline
-   - Click **Run pipeline** to provision state storage
+6. **Verify and Push Changes**:
+   - Verify the remote repository:
+     ```bash
+     git remote -v
+     ```
+   - Stage all files:
+     ```bash
+     git add .
+     ```
+   - Commit changes:
+     ```bash
+     git commit -m "Initial commit with Terraform files"
+     ```
+   - Push to the Azure DevOps repository:
+     ```bash
+     git branch -M main
+     git push -u origin main
+     ```
 
-3. **Wait until the manual bootstrap pipeline completes. Then, make changes as needed and push them. The main resources pipeline in Azure DevOps will run automatically on changes pushed to the `terraform/resources/` directory.**
-   ```sh
-   git add .
-   git commit -m "Your change message"
-   git push
-   ```
+7. **Create Bootstrap Pipeline**:
+   - In Azure DevOps, navigate to **Pipelines** and click **Create Pipeline**.
+   - Select **Azure Repos Git** and choose your repository.
+   - In the path field, select `/azure-pipelines-bootstrap.yml` to create the bootstrap pipeline.
+   - Save and rename the pipeline (e.g., `bootstrap`) by clicking the three dots next to the pipeline and selecting **Rename/move**.
+
+8. **Create Resources Pipeline**:
+   - Click **Create Pipeline** again.
+   - Select **Azure Repos Git** and your repository.
+   - In the path field, select `/azure-pipelines-resources.yml` to create the resources pipeline.
+   - Save and rename the pipeline (e.g., `resources`).
+
+9. **Create Variable Group**:
+   - Go to **Pipelines** → **Library** → **+ Variable group**.
+   - Name the group `var_dev_group`.
+   - Add the following variables (replace `<your tenant id>` and `<your subscription id>` with values from your Azure account):
+     - `environment`: `dev`
+     - `tenant_id`: `<your tenant id>`
+     - `subscription_id`: `<your subscription id>`
+
+10. **Create Service Connection**:
+   - Go to **Project Settings** → **Service connections**.
+   - Choose **Azure Resource Manager**.
+   - Select:
+     - **Identity type**: App registration
+     - **Credential**: Secret
+     - **Scope level**: Subscription
+     - **Name**: The service principal that you have in Azure Portal.
+   - Follow the prompts to configure the connection using your Azure Service Principal.
+
+11. **Run Bootstrap Pipeline**:
+   - In **Pipelines**, locate the `bootstrap` pipeline.
+   - Click the three dots next to it and select **Run pipeline**.
+   - Wait for the pipeline to complete.
+
+12. **Run Resources Pipeline**:
+   - Once the bootstrap pipeline completes, locate the `resources` pipeline.
+   - Run it by clicking the three dots and selecting **Run pipeline**.
+   - Wait for the pipeline to complete.
+
+13. **Update Terraform Files**:
+   - Make changes to any Terraform file in your local Azure DevOps repository.
+   - Stage, commit, and push the changes:
+     ```bash
+     git add .
+     git commit -m "Update Terraform configuration"
+     git push origin main
+     ```
+   - This will trigger the `resources` pipeline, automatically deploying the updates.
 
 ---
 
